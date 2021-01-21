@@ -34,6 +34,7 @@ type Config struct {
 	KubeOneAPI struct {
 		Value struct {
 			Endpoint string `json:"endpoint"`
+			Port     int    `json:"port"`
 		} `json:"value"`
 	} `json:"kubeone_api"`
 
@@ -166,6 +167,10 @@ func (c *Config) Apply(cluster *kubeonev1beta1.KubeOneCluster) error {
 	if c.KubeOneAPI.Value.Endpoint != "" {
 		cluster.APIEndpoint = kubeonev1beta1.APIEndpoint{
 			Host: c.KubeOneAPI.Value.Endpoint,
+		}
+
+		if c.KubeOneAPI.Value.Port > 0 {
+			cluster.APIEndpoint.Port = c.KubeOneAPI.Value.Port
 		}
 	}
 
