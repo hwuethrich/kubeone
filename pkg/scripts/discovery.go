@@ -25,7 +25,7 @@ echo "$fqdn"
 
 	verifyPrerequisitesScript = `
 # Check is Docker installed
-if ! type docker &>/dev/null; then exit 1; fi
+# if ! type docker &>/dev/null; then exit 1; fi
 # Check is Kubelet installed
 if ! type kubelet &>/dev/null; then exit 1; fi
 # Check is Kubeadm installed
