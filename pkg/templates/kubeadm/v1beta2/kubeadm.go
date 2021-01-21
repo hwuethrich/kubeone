@@ -134,6 +134,7 @@ func NewConfig(s *state.State, host kubeoneapi.HostConfig) ([]runtime.Object, er
 					"endpoint-reconciler-type": "lease",
 					"service-node-port-range":  cluster.ClusterNetwork.NodePortRange,
 					"enable-admission-plugins": kubeflags.DefaultAdmissionControllers(kubeSemVer),
+					"feature-gates":            "TTLAfterFinished=true",
 				},
 				ExtraVolumes: []kubeadmv1beta2.HostPathMount{},
 			},
@@ -142,8 +143,15 @@ func NewConfig(s *state.State, host kubeoneapi.HostConfig) ([]runtime.Object, er
 		ControllerManager: kubeadmv1beta2.ControlPlaneComponent{
 			ExtraArgs: map[string]string{
 				"flex-volume-plugin-dir": "/var/lib/kubelet/volumeplugins",
+				"feature-gates":          "TTLAfterFinished=true",
+				"port":                   "10252",
 			},
 			ExtraVolumes: []kubeadmv1beta2.HostPathMount{},
+		},
+		Scheduler: kubeadmv1beta2.ControlPlaneComponent{
+			ExtraArgs: map[string]string{
+				"port": "10251",
+			},
 		},
 		ClusterName:     cluster.Name,
 		ImageRepository: cluster.AssetConfiguration.Kubernetes.ImageRepository,
@@ -152,6 +160,9 @@ func NewConfig(s *state.State, host kubeoneapi.HostConfig) ([]runtime.Object, er
 				ImageMeta: kubeadmv1beta2.ImageMeta{
 					ImageRepository: cluster.AssetConfiguration.Etcd.ImageRepository,
 					ImageTag:        cluster.AssetConfiguration.Etcd.ImageTag,
+				},
+				ExtraArgs: map[string]string{
+					"listen-metrics-urls": "http://0.0.0.0:2381",
 				},
 			},
 		},
